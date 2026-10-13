@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Checklist de Guardia · CIFP Tony Gallardo</title>
+  <meta name="description" content="Checklist de rondas de guardia del profesorado del CIFP Tony Gallardo">
+  <meta name="theme-color" content="#0d2b5e">
+  <meta name="robots" content="noindex">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png">
+  <link rel="apple-touch-icon" href="img/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Checklist Guardia">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=11">
+</head>
+<body>
+
+<header class="top">
+  <img src="img/icono.svg" alt="" class="top-logo" width="44" height="44">
+  <div class="top-txt">
+    <h1>Checklist de Guardia</h1>
+    <p id="top-sub">CIFP Tony Gallardo</p>
+  </div>
+  <button type="button" class="pendientes" id="btn-pendientes" hidden title="Envíos pendientes">
+    <span id="n-pendientes">0</span> sin enviar
+  </button>
+  <div class="visitas" id="visitas" title="Personas distintas que han entrado en la app" aria-label="Visitantes únicos" hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+    <b id="n-visitas">0</b>
+  </div>
+</header>
+
+<div class="aviso-tiempo" id="aviso-tiempo" hidden></div>
+
+<main id="app">
+
+  <!-- Acceso -->
+  <section class="vista" id="v-acceso" hidden>
+    <div class="tarjeta hero">
+      <img src="img/logo.webp" alt="Logo CIFP Tony Gallardo" class="hero-logo" width="120" height="120">
+      <h2>Checklist de Guardia</h2>
+      <p class="suave">Registra tu ronda desde el móvil. Jefatura de Estudios recibe el informe al momento.</p>
+      <form id="f-acceso" class="pila" autocomplete="off">
+        <label class="campo">
+          <span>Tu nombre y apellidos</span>
+          <input id="acc-nombre" name="nombre" required maxlength="80" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Ej.: Ana Pérez Suárez">
+        </label>
+        <p class="error" id="acc-error" hidden></p>
+        <button class="btn primario grande" type="submit">Entrar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Datos de la guardia -->
+  <section class="vista" id="v-datos" hidden>
+    <div class="saludo">
+      <p>Hola, <b id="d-nombre"></b> <button type="button" class="enlace" id="btn-cambiar">no soy yo</button></p>
+      <p class="suave" id="d-fecha"></p>
+    </div>
+
+    <details class="tarjeta normas" id="normas">
+      <summary>📋 Recordatorio de la guardia</summary>
+      <ul id="lista-normas"></ul>
+    </details>
+
+    <div class="tarjeta">
+      <h3 class="tit">¿Qué guardia es?</h3>
+      <div class="segmento" id="seg-turno" role="radiogroup" aria-label="Turno"></div>
+      <div class="chips" id="chips-franja" role="radiogroup" aria-label="Franja horaria"></div>
+
+      <div id="bloque-recreo" hidden>
+        <h3 class="tit peq">Tu función en el recreo</h3>
+        <div class="opciones3" id="op-funcion" role="radiogroup" aria-label="Función en el recreo"></div>
+      </div>
+
+      <h3 class="tit peq">¿Cuántos estáis de guardia en esta franja?</h3>
+      <div class="contador" data-campo="nDocentes">
+        <button type="button" data-d="-1" aria-label="Menos">−</button>
+        <output>1</output>
+        <button type="button" data-d="1" aria-label="Más">+</button>
+      </div>
+      <label class="campo" id="campo-companeros" hidden>
+        <span>Compañeros/as de guardia <i>(opcional)</i></span>
+        <input id="d-companeros" maxlength="200" placeholder="Nombres separados por comas">
+      </label>
+    </div>
+
+    <button class="btn primario grande" id="btn-empezar" type="button" disabled>Empezar ronda →</button>
+  </section>
+
+  <!-- Checklist -->
+  <section class="vista" id="v-ronda" hidden>
+    <div class="progreso" id="progreso">
+      <div class="progreso-txt"><b id="p-hechos">0</b> de <span id="p-total">0</span> puntos · <span id="p-franja"></span></div>
+      <div class="barra"><i id="p-barra"></i></div>
+    </div>
+
+    <div id="secciones"></div>
+
+    <div class="tarjeta">
+      <h3 class="tit">🏢 Plantas recorridas</h3>
+      <div class="chips" id="chips-plantas"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h3 class="tit">👥 Grupos atendidos sin docente</h3>
+      <div class="fila-add">
+        <input id="in-grupo" maxlength="60" placeholder="Ej.: 1º GM Cocina · aula 12">
+        <button type="button" class="btn" id="btn-add-grupo">Añadir</button>
+      </div>
+      <div class="chips quitables" id="chips-grupos"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h3 class="tit">🚪 Movimiento de alumnado</h3>
+      <div class="dos">
+        <div>
+          <p class="etq">Entradas tardías</p>
+          <div class="contador" data-campo="entradasTardias">
+            <button type="button" data-d="-1" aria-label="Menos">−</button><output>0</output><button type="button" data-d="1" aria-label="Más">+</button>
+          </div>
+        </div>
+        <div>
+          <p class="etq">Salidas anticipadas</p>
+          <div class="contador" data-campo="salidasAnticipadas">
+            <button type="button" data-d="-1" aria-label="Menos">−</button><output>0</output><button type="button" data-d="1" aria-label="Más">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3 class="tit">📝 Observaciones</h3>
+      <textarea id="in-obs" rows="3" maxlength="1500" placeholder="Cualquier cosa que Jefatura deba saber"></textarea>
+    </div>
+
+    <div class="acciones">
+      <button class="btn primario grande" id="btn-revisar" type="button">Revisar y enviar</button>
+      <button class="btn texto" id="btn-descartar" type="button">Descartar esta ronda</button>
+    </div>
+  </section>
+
+  <!-- Enviado -->
+  <section class="vista" id="v-enviado" hidden>
+    <div class="tarjeta hero">
+      <div class="check-grande" id="env-icono">✓</div>
+      <h2 id="env-titulo">Guardia registrada</h2>
+      <p class="suave" id="env-texto">Jefatura de Estudios ya tiene tu informe.</p>
+      <div class="resumen" id="env-resumen"></div>
+      <button class="btn primario grande" id="btn-nueva" type="button">Nueva guardia</button>
+    </div>
+  </section>
+</main>
+
+<!-- Hoja de confirmación -->
+<dialog id="dlg-confirmar" class="hoja">
+  <form method="dialog">
+    <h3>¿Enviamos el informe?</h3>
+    <div class="resumen" id="conf-resumen"></div>
+    <p class="aviso-sin" id="conf-sin" hidden></p>
+    <div class="acciones">
+      <button class="btn primario grande" value="enviar" id="btn-enviar">Enviar a Jefatura</button>
+      <button class="btn texto" value="cancelar">Seguir revisando</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Novedades de una actualización: aviso centrado, una vez por versión -->
+<div class="novedades" id="novedades" role="dialog" aria-modal="true" aria-labelledby="nov-titulo" hidden>
+  <div class="novedades-caja">
+    <div class="novedades-ico" aria-hidden="true">✨</div>
+    <h3 id="nov-titulo">Novedades</h3>
+    <ul id="nov-lista"></ul>
+    <button type="button" class="btn primario grande" id="nov-cerrar">Entendido</button>
+  </div>
+</div>
+
+<!-- Pantalla de envío: bloquea la app mientras se envía -->
+<div class="enviando" id="enviando" role="alertdialog" aria-modal="true" aria-live="assertive" aria-label="Enviando la ronda" hidden>
+  <div class="enviando-caja">
+    <img src="img/logo.webp" alt="" width="72" height="72">
+    <h3>Enviando tu ronda</h3>
+    <p id="env-fase">Preparando el informe…</p>
+    <div class="barra grande"><i id="env-barra"></i></div>
+    <small>No cierres ni toques la pantalla hasta que termine</small>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<template id="tpl-punto">
+  <div class="punto" data-estado="">
+    <div class="punto-cab">
+      <div class="punto-txt"><b></b><small></small></div>
+      <span class="punto-hora"></span>
+    </div>
+    <div class="estados" role="radiogroup">
+      <button type="button" data-e="ok"><span>✓</span> Sí</button>
+      <button type="button" data-e="na"><span>✕</span> No</button>
+      <button type="button" data-e="inc"><span>!</span> Incidencia</button>
+    </div>
+    <div class="punto-inc" hidden>
+      <textarea rows="2" maxlength="600" placeholder="¿Qué ha pasado? ¿Dónde?"></textarea>
+      <label class="urgente"><input type="checkbox"> Urgente (se resalta en rojo en el registro)</label>
+    </div>
+  </div>
+</template>
+
+<script src="js/config.js?v=11"></script>
+<script src="js/app.js?v=11"></script>
+</body>
+</html>

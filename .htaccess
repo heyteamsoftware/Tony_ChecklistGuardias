@@ -1,0 +1,20 @@
+Options -Indexes
+
+# Solo enviar.php y visitas.php son accesibles dentro de /api
+<If "%{REQUEST_URI} =~ m#/api/# && %{REQUEST_URI} !~ m#/api/(enviar|visitas)\.php$#">
+  Require all denied
+</If>
+
+# Nada de ficheros de documentación, despliegue o Apps Script
+<FilesMatch "(\.md|\.gs|\.sh|\.bat|\.conf)$">
+  Require all denied
+</FilesMatch>
+RedirectMatch 404 /Tony_Guardias/(apps-script|deploy|\.git)(/|$)
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|css|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "same-origin"
+</IfModule>

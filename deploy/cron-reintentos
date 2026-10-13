@@ -1,0 +1,2 @@
+# Reenvía a la hoja de Google las rondas que no llegaron. Copiar a /etc/cron.d/tony-guardias
+*/5 * * * * www-data /usr/bin/php /var/www/html/Tony_Guardias/api/reintentar.php >> /var/lib/tony-guardias/reintentos.log 2>&1
